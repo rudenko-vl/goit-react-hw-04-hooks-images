@@ -26,18 +26,6 @@ const App = () => {
       setArrayImages([...arrayImages, ...newImages]);
     })
     setILoading(false);
-
-    // const requestPictures = async () => {
-    //   setILoading(true)
-    //   const newImages = await PixabayApi(imageName, page);
-    //   console.log(newImages)
-    //   setArrayImages([...newImages, ...arrayImages]);
-    //   setILoading(false);
-    //   if (newImages.length === 0) {
-    //     alert('Nothing found, please try again')
-    //   }
-    // }
-    // requestPictures()
   }, [arrayImages, imageName, page])
 
   const onFormSubmit = newImageName => {

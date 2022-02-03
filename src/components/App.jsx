@@ -44,7 +44,7 @@ const App = () => {
       setILoading(true)
       try {
         const newImages = await PixabayApi(imageName, page)
-        setArrayImages([...arrayImages, ...newImages])
+        setArrayImages(prewImages => [...prewImages, ...newImages])
       } catch (error) {
         console.log(error)
       } finally {
@@ -52,8 +52,7 @@ const App = () => {
       }
     }
     fetchImages()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page])
+  }, [imageName, page])
 
   const onFormSubmit = newImageName => {
     if (newImageName === imageName) {

@@ -7,6 +7,7 @@ import Modal from "./Modal/Modal";
 import Loader from "./Loader/Loader";
 import ImageGallery from "./ImageGallery/ImageGallery";
 import { Container } from "./App.styled";
+import toast, { Toaster } from 'react-hot-toast';
 
 const App = () => {
   const [imageName, setImageName] = useState('');
@@ -25,6 +26,9 @@ const App = () => {
       setILoading(true)
       try {
         const newImages = await PixabayApi(imageName, 1)
+        if (newImages.length === 0) {
+          toast.error('Nothing found, please try again!')
+        }
         setArrayImages(newImages)
       } catch (error) {
         console.log(error)
@@ -49,6 +53,7 @@ const App = () => {
         console.log(error)
       } finally {
         setILoading(false)
+        window.scrollBy({ top: 1000, behavior: 'smooth' });
       }
     }
     fetchImages()
@@ -90,6 +95,7 @@ const App = () => {
         {showModal && <Modal toggleModal={toggleModal}>
           <img src={largeImage} alt={Date.now()} />
         </Modal>}
+        <Toaster/>
       </Container>
     );
   }

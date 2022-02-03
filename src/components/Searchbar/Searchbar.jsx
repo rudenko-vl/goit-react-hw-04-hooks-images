@@ -1,35 +1,29 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { FcSearch } from 'react-icons/fc';
 import { AiOutlineClose } from 'react-icons/ai';
 import { Header, Form, FormBtn, BtnLabel, FormInput, ClearBtn } from "./Searchbar.styled";
 
-class Searchbar extends Component {
-  state = {
-    inputValue: "",
-  };
+const Searchbar = ({onSubmit}) => {
+  const [inputValue, setInputValue] = useState('');
 
-  onSubmitForm = (ev) => {
-    const { onSubmit } = this.props;
-    const { inputValue } = this.state;
+  const onSubmitForm = (ev) => {
     ev.preventDefault();
     onSubmit(inputValue.toLowerCase());
-    this.onClearInput()
+    onClearInput()
   };
 
-  onChangeInput = (ev) => {
-    this.setState({ inputValue: ev.target.value });
+  const onChangeInput = (ev) => {
+    setInputValue(ev.target.value)
   };
 
-  onClearInput = () => {
-    this.setState({ inputValue: "" });
+  const onClearInput = () => {
+    setInputValue('')
   };
 
-  render() {
-    const { inputValue } = this.state;
     return (
       <Header>
-        <Form onSubmit={this.onSubmitForm}>
+        <Form onSubmit={onSubmitForm}>
           <FormBtn type="submit"><FcSearch/>
             <BtnLabel>
             </BtnLabel>
@@ -39,15 +33,15 @@ class Searchbar extends Component {
             autoComplete="off"
             autoFocus
             placeholder="Search images and photos"
-            onChange={this.onChangeInput}
+            onChange={onChangeInput}
             value={inputValue}
           />
-          <ClearBtn type="button" onClick={this.onClearInput}><AiOutlineClose/></ClearBtn>
+          <ClearBtn type="button" onClick={onClearInput}><AiOutlineClose/></ClearBtn>
         </Form>
       </Header>
     );
   }
-}
+
 
 Searchbar.propTypes = {
   onSubmitForm: PropTypes.func

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import { GlobalStyle } from "./GlobalStyle";
 import PixabayApi from "../helpers/api-service";
 import Searchbar from "./Searchbar/Searchbar";
@@ -8,84 +8,76 @@ import Loader from "./Loader/Loader";
 import ImageGallery from "./ImageGallery/ImageGallery";
 import { Container } from "./App.styled";
 
-class App extends Component {
-  state = {
-    imageName: "",
-    arrayImages: [],
-    page: 1,
-    showModal: false,
-    loading: false,
-    largeImage: null,
-  };
-  
-  componentDidUpdate(prevProps, prevState) {
-    if (
-      prevState.imageName !== this.state.imageName ||
-      prevState.page !== this.state.page
-    ) {
-      this.requestPictures();
-    }
-    return;
-  }
+const App = () => {
+  const [imageName, setImageName] = useState('');
+  const [arrayImages, setArrayImages] = useState([]);
+  const [page, setPage] = useState(1);
+  const [showModal, setShowModal] = useState(false);
+  const [loading, setILoading] = useState(false);
+  const [largeImage, setLargeImage] = useState(null);
 
-  onFormSubmit = newImageName => {
-    if (newImageName === this.state.imageName) {
+
+  useEffect(() => {
+    if (imageName === '') {
+     return;
+    }
+    setILoading(true)
+    PixabayApi(imageName, page).then(newImages => {
+      setArrayImages([...arrayImages, ...newImages]);
+    })
+    setILoading(false);
+
+    // const requestPictures = async () => {
+    //   setILoading(true)
+    //   const newImages = await PixabayApi(imageName, page);
+    //   console.log(newImages)
+    //   setArrayImages([...newImages, ...arrayImages]);
+    //   setILoading(false);
+    //   if (newImages.length === 0) {
+    //     alert('Nothing found, please try again')
+    //   }
+    // }
+    // requestPictures()
+  }, [arrayImages, imageName, page])
+
+  const onFormSubmit = newImageName => {
+    if (newImageName === imageName) {
       return;
     }
-    this.setState({
-      imageName: newImageName,
-      arrayImages: [],
-      page: 1,
-    });
+    setImageName(newImageName)
+    setArrayImages([])
+    setPage(1)
   };
 
-  
-  requestPictures = async () => {
-    const { imageName, arrayImages, page } = this.state;
-    this.setState({
-      loading: true,
-    });
-    const newImages = await PixabayApi(imageName, page);
-    this.setState({
-      arrayImages: [...arrayImages, ...newImages],
-      loading: false,
-    });
-  }
- 
 
-  onImageClick = (largeImage) => {
-    this.setState({ largeImage });
+  const onImageClick = (largeImage) => {
+    setLargeImage(largeImage);
   };
 
-  toggleModal = () => {
-    this.setState(({ showModal }) => ({
-      showModal: !showModal,
-    }));
+  const toggleModal = () => {
+    setShowModal(!showModal);
   };
 
-  onLoadMore = (ev) => {
+  const onLoadMore = (ev) => {
     ev.preventDefault();
-    this.setState((prevState) => ({ page: prevState.page + 1 }));
+    setPage(page + 1)
   };
 
-  render() {
-    const { largeImage, arrayImages, loading, showModal } = this.state;
     return (
       <Container>
         <GlobalStyle />
-        <Searchbar onSubmit={this.onFormSubmit}/>
+        <Searchbar onSubmit={onFormSubmit}/>
         <ImageGallery arrayImages={arrayImages} onClick={largeImageURL => {
-              this.toggleModal();
-              this.onImageClick(largeImageURL);
+              toggleModal();
+              onImageClick(largeImageURL);
           }} />
-          {arrayImages.length > 0 && <Button onClick={this.onLoadMore} />}
+          {arrayImages.length > 0 && <Button onClick={onLoadMore} />}
          {loading && <Loader/>} 
-        {showModal && <Modal toggleModal={this.toggleModal}>
-          <img src={largeImage} alt="" />
+        {showModal && <Modal toggleModal={toggleModal}>
+          <img src={largeImage} alt={Date.now()} />
         </Modal>}
       </Container>
     );
   }
-}
 
 export default App;

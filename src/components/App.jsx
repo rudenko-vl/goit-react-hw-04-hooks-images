@@ -21,12 +21,38 @@ const App = () => {
     if (imageName === '') {
      return;
     }
-    setILoading(true)
-    PixabayApi(imageName, page).then(newImages => {
-      setArrayImages([...arrayImages, ...newImages]);
-    })
-    setILoading(false);
-  }, [arrayImages, imageName, page])
+    async function fetchImages() {
+      setILoading(true)
+      try {
+        const newImages = await PixabayApi(imageName, 1)
+        setArrayImages(newImages)
+      } catch (error) {
+        console.log(error)
+      } finally {
+        setILoading(false)
+      }
+    }
+    fetchImages()
+  }, [imageName])
+
+
+  useEffect(() => {
+    if (page === 1) {
+      return
+    }
+    async function fetchImages() {
+      setILoading(true)
+      try {
+        const newImages = await PixabayApi(imageName, page)
+        setArrayImages([...arrayImages, ...newImages])
+      } catch (error) {
+        console.log(error)
+      } finally {
+        setILoading(false)
+      }
+    }
+    fetchImages()
+  }, [page])
 
   const onFormSubmit = newImageName => {
     if (newImageName === imageName) {

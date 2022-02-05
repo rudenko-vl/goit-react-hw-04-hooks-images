@@ -17,43 +17,25 @@ const App = () => {
   const [loading, setILoading] = useState(false);
   const [largeImage, setLargeImage] = useState(null);
 
-
-  useEffect(() => {
+    useEffect(() => {
     if (imageName === '') {
      return;
     }
     async function fetchImages() {
       setILoading(true)
       try {
-        const newImages = await PixabayApi(imageName, 1)
+        const newImages = await PixabayApi(imageName, page)
         if (newImages.length === 0) {
           toast.error('Nothing found, please try again!')
         }
-        setArrayImages(newImages)
-      } catch (error) {
-        console.log(error)
-      } finally {
-        setILoading(false)
-      }
-    }
-    fetchImages()
-  }, [imageName])
-
-
-  useEffect(() => {
-    if (page === 1) {
-      return
-    }
-    async function fetchImages() {
-      setILoading(true)
-      try {
-        const newImages = await PixabayApi(imageName, page)
         setArrayImages(prewImages => [...prewImages, ...newImages])
       } catch (error) {
         console.log(error)
       } finally {
         setILoading(false)
-        window.scrollBy({ top: 1000, behavior: 'smooth' });
+        if (page > 1) {
+          window.scrollBy({ top: 1000, behavior: 'smooth' });
+        }
       }
     }
     fetchImages()
@@ -67,7 +49,6 @@ const App = () => {
     setArrayImages([])
     setPage(1)
   };
-
 
   const onImageClick = (largeImage) => {
     setLargeImage(largeImage);
